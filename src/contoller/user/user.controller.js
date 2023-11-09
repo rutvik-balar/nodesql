@@ -1,5 +1,6 @@
 const db = require('../../helpers/dbConnection');
 const { getUserRepo, createUserRepo, updateUserRepo, deleteUserRepo, getUserByCredentialRepo } = require('../../repositoies/user.repo');
+const jwt = require('jsonwebtoken');
 
 const getUsers = async (req, res) => {
     const userId = parseInt(req.query.id);
@@ -77,4 +78,21 @@ const deleteUser = async (req, res) => {
     }
 };
 
-module.exports = { getUsers, createUser, updateUser, deleteUser };
+const loginUsers = async (req, res) => {
+    const { Email, Password } = req.body;
+    try {
+        const rows = await getUserByCredentialRepo(Email, Password);
+        if (rows.length === 0) {
+            return res.status(401).json({ error: 'Invalid credentials' });
+        } else {
+            console.log(rows);
+            const token = jwt.sign({id : rows[0].id}, process.env.JWT_SECRET, { expiresIn: '1h' });
+            res.json({ token });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'An error occurred while logging in.' });
+    }
+};
+
+module.exports = { getUsers, createUser, updateUser, deleteUser, loginUsers };
