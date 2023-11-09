@@ -6,6 +6,11 @@ const getUserRepo = async(id) =>{
     return result
 }
 
+const getUserByCredentialRepo = async(Email,Password) =>{
+    const [result] = await db.promise().query(`SELECT id,Name,Email,Password FROM data WHERE is_deleted = 0  AND Email = ? AND Password = ? `, [Email,Password]);
+    return result
+}
+
 const createUserRepo = async(Name,Email,Password) =>{
     const [result] = await db.promise().query('INSERT INTO data (Name, Email, Password) VALUES (?, ?, ?)', [Name, Email, Password]);
     return result
@@ -21,4 +26,4 @@ const deleteUserRepo = async(userId) =>{
     return result
 }
 
-module.exports = {getUserRepo, createUserRepo, updateUserRepo, deleteUserRepo}
+module.exports = {getUserRepo, createUserRepo, updateUserRepo, deleteUserRepo, getUserByCredentialRepo}
