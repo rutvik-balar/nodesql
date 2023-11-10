@@ -1,24 +1,31 @@
 const jwt = require('jsonwebtoken');
 
-    const verifyToken = (roles) => (req, res, next) => {
+const verifyToken = (roles) => (req, res, next) => {
     const token = req.header('authorization');
+
+    if (!token) {
+        return res.status(401).send({ result: 'Token not provided' });
+    }
+
     jwt.verify(token, process.env.JWT_SECRET, (error, auth) => {
         if (error) {
-            res.status(401).send({ result: 'Unauthorized user' })
+            if (error.name === 'TokenExpiredError') {
+                return res.status(401).send({ result: 'Token expired' });
+            } else {
+                return res.status(401).send({ result: 'Invalid token' });
+            }
         } else {
-            req.data = auth
+            req.data = auth;
             console.log(req.data);
             console.log(roles);
 
-            if (roles.indexOf(auth.role) < 0) {
-                res.status(401).send({ result: 'you are not admin' })
+            if (roles && roles.length > 0 && roles.indexOf(auth.role) < 0) {
+                return res.status(401).send({ result: 'You are not authorized' });
             }
-            console.log(roles.indexOf(auth.role));
-            
             next();
         }
-    })
-}
+    });
+};
 
 
 module.exports = { verifyToken }
