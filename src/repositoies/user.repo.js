@@ -7,7 +7,7 @@ const getUserRepo = async(id) =>{
 }
 
 const getUserByCredentialRepo = async(Email,Password) =>{
-    const [result] = await db.promise().query(`SELECT id,Name,Email,Password FROM data WHERE is_deleted = 0  AND Email = ? AND Password = ? `, [Email,Password]);
+    const [result] = await db.promise().query(`SELECT id,Name,Email,Password,created_by FROM data WHERE is_deleted = 0  AND Email = ? AND Password = ? `, [Email,Password]);
     return result
 }
 

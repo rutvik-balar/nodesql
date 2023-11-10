@@ -3,7 +3,7 @@ const { getUserRepo, createUserRepo, updateUserRepo, deleteUserRepo, getUserByCr
 const jwt = require('jsonwebtoken');
 
 const getUsers = async (req, res) => {
-    const userId = parseInt(req.query.id);
+    const userId = req.data.id;
     try {
         const data = await getUserRepo(userId)
         if (data?.length) {
@@ -35,7 +35,7 @@ const createUser = async (req, res) => {
 };
 
 const updateUser = async (req, res) => {
-    const userId = parseInt(req.query.id);
+    const userId = req.data.id;
     const { Name, Email, Password } = req.body;
     try {
         const user = await getUserRepo(userId)
@@ -60,7 +60,7 @@ const updateUser = async (req, res) => {
 };
 
 const deleteUser = async (req, res) => {
-    const userId = parseInt(req.query.id);
+    const userId = req.data.id;
 
     try {
         const user = await getUserRepo(userId)
@@ -86,7 +86,7 @@ const loginUsers = async (req, res) => {
             return res.status(401).json({ error: 'Invalid credentials' });
         } else {
             console.log(rows);
-            const token = jwt.sign({id : rows[0].id}, process.env.JWT_SECRET, { expiresIn: '1h' });
+            const token = jwt.sign({id : rows[0].id,role : rows[0].created_by}, process.env.JWT_SECRET, { expiresIn: '1d' });
             res.json({ token });
         }
     } catch (error) {

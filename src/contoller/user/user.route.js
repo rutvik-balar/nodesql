@@ -1,12 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const userController = require('./user.controller');
+const {verifyToken} = require('./user.middleware');
 
 router.post('/login', userController.loginUsers);
-router.get('/', userController.getUsers);
+router.get('/',verifyToken(['normal','admin']), userController.getUsers);
 router.post('/', userController.createUser);
-router.patch('/', userController.updateUser);
-router.delete('/', userController.deleteUser);
+router.patch('/',verifyToken, userController.updateUser);
+router.delete('/',verifyToken, userController.deleteUser);
 
 module.exports = router;
 
